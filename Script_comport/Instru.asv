@@ -1,0 +1,23 @@
+function Instru(name,instruc_folder, window, smallIm,Kb==true)
+ % from http://pngimg.com/upload/cat_PNG100.png
+ file = strcat(instruc_folder,name);
+ [img, ~, ~] = imread(name); 
+ % [img, ~, alpha] = imread(name);
+ %size(img)
+ 
+ 
+
+ 
+ texture = Screen('MakeTexture', window, img);
+ %img(:, :, 4) = alpha;
+ 
+ Screen('DrawTexture', window, texture, [], smallIm);
+ Screen('Flip', window);
+ if Kb
+     % Wait for a key press
+       KbStrokeWait;
+ 
+ end
+ % Wait for a key press
+ KbStrokeWait;
+ 
