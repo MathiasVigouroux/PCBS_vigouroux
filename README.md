@@ -4,8 +4,10 @@ This is a GitHub to create the project for PCBS
 # Context 
 ## Experimental Design
 As it was mentionned in the introductory part, the "foreperiod paradigm" enable scientist to study the role of temporal predictions. This paradigm is schematized in 2.1. More precisely, participants heard two auditory cues separated by a foreperiod. An auditory cue was selected because it has been shown that implicit temporal predictability enhances pitch discrimination sensitivity [1].
-Participants were placed in front of a computer, put the brand of the computer), where they were au- tonomously following the instructions D. During these blocks, the participant were only asked to answer as quickly as possible to the Target stimuli. Two Bayesian observers also learned the distribution during these blocks. The experiment started with a calibration of the eye tracker, an EYE Tribe tuned to a 60 Hz sampling frequency. Participants also received the auditory stimuli through headphones. The experiment was back end by a Matlab running code, the Psychtoolbox library for the GUI. The analysis conducted in Python.
-4.2 Foreperiod distributions
+Participants were placed in front of a computer, put the brand of the computer), where they were au- tonomously following the instructions D. During these blocks, the participant were only asked to answer as quickly as possible to the Target stimuli. Two Bayesian observers also learned the distribution during these blocks. The experiment started with a calibration of the eye tracker, an EYE Tribe tuned to a 60 Hz sampling frequency. Participants also received the auditory stimuli through headphones. 
+
+## Foreperiod distributions
+
 The foreperiod were drawn in order to study the effect of the variability of the foreperiods on our behavior 4.1 Before the beginning of the experiment there was a training phase. In this training phase, participants are presented with a foreperiod distribution that was distinct from the foreperiod used in the rest of the experi- mental paradigm. Indeed, a distribution with a mean of 2.5 seconds and 0.25 second for the standard deviation was chosen. A Weber Fraction of 0.1 was therefore selected for the distribution of the foreperiods during the
 training phase. Thus, this distribution was likely to be easily learned.
 In the main task, four foreperiod distributions were selected, all Gaussian, with a mean of 2.5 s and varying
