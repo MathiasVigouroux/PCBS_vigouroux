@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<head>
+  <title>A simple jsPsych experiment</title>
+</head>
+<body>
+  <script src = "../jspsych-7.3.0/dist/jspsych.js"></script>
+  <script src = "../jspsych-7.3.0/dist/plugin-html-keyboard-response.js"></script>
+  <script src = "../jspsych-7.3.0/dist/plugin-html-keyboard-response.js"></script>
+
+  <script>
+
+
+// A faire : pour le moment il n'y a q'un seul block. Faire différentes distribution
+// Initialisation de JsPsych
+
+    const jsPsych = initJsPsych();
+
+// Initialisationb des bips 
+    var bip_duration = 1000 // in milliseconds
+
+    function playCueSound(){
+      var frequency = 440.0
+      var context = new AudioContext()
+      var o = context.createOscillator()
+      o.frequency.value = frequency
+      var  g = context.createGain()
+      o.connect(g)
+      g.connect(context.destination)
+      o.start(0)
+      g.gain.exponentialRampToValueAtTime(
+      0.00001, context.currentTime + bip_duration/1000
+      )
+    };
+
+    function playTargetSound(){
+      var frequency = 2000.0
+      var context = new AudioContext()
+      var o = context.createOscillator()
+      o.frequency.value = frequency
+      var  g = context.createGain()
+      o.connect(g)
+      g.connect(context.destination)
+      o.start(0)
+      g.gain.exponentialRampToValueAtTime(
+      0.00001, context.currentTime + bip_duration/1000
+      )
+    };
+
+//-----------Cue and Target Sound
+    var cue = {
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: "cue",
+      on_start: function(){
+        return playCueSound()
+      },
+      trial_duration: bip_duration,
+      choices: "NO_KEYS"
+    }
+
+    var target = {
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: "target",
+      on_start: function(){
+        return playTargetSound()
+      },
+      trial_duration: bip_duration,
+      choices: ["k"]
+    }
+
+//----------ISI A faire : faire le ISI dans exponential distribution
+var ISI={
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: "ISI",
+      trial_duration: 2000,
+      choices: "NO_KEYS"
+  };
+
+//----------Creation of the Foreperiods: changer la smple distrbution uniform en ditribution gaussienne 
+
+    function getRandomArbitrary(min, max) {
+        return Math.random() * (max - min) + min;
+    } // defintion of a fnction to have random trial (not normal for the moment just uniform)
+
+    experiment_duration= 5 // experiment duration
+
+    fp_dur_list= []
+    for (let i=0; i<= experiment_duration; i++){
+      fp_dur= getRandomArbitrary(1000, 6000)
+      fp_dur_list.push(fp_dur)
+    }
+
+    fp_list= []
+    for (let i=0; i<= experiment_duration; i++){
+      fp = {
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: "fp",
+      trial_duration: fp_dur_list[i],
+      choices: "NO_KEYS",
+      }
+      fp_list.push(fp)
+    }
+
+  var tooEarly = {
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: "Too early",
+      trial_duration: 1,
+      choices: ["k"],
+  }
+
+  var condEarly = {
+    timeline: [tooEarly],
+    conditional_function: function(){
+      if (responseEarly = true ){
+        return true 
+      }
+    },
+  }
+
+   
+    //stim = jsPsych.randomization.shuffleNoRepeats(stim);
+
+    let timeline = [];
+    
+    for (let i = 0; i < fp_list.length; i++) {           
+        timeline.push(cue);
+        timeline.push(fp_list[i]);
+        timeline.push(target);
+        timeline.push(ISI);
+                    }
+
+
+    
+    jsPsych.run(timeline);
+
+
+
+
+
+
+
+
+
+
+
+
+
+    var tooEarly = {
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: "Too early",
+      trial_duration: 1,
+      choices: ["k"],
+  }
+
+  var condEarly = {
+    timeline: [tooEarly],
+    conditional_function: function(){
+      if (responseEarly = true ){
+        return true 
+      }
+    },
+  }
+
+    </script>
+</body>
