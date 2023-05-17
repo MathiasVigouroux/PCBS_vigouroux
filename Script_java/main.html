@@ -13,11 +13,34 @@
 // A faire : pour le moment il n'y a q'un seul block. Faire différentes distribution
 // Initialisation de JsPsych
 
-    const jsPsych = initJsPsych();
+    const jsPsych = initJsPsych({
+      on_finish: function(){jsPsych.data.get().localSave('csv', `data-${ID}.csv`)}
+    });
 
-// Initialisationb des bips 
+    const ID = jsPsych.randomization.randomID(10)
+    const INSTRUCTIONS = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `\
+        <p>A series of tones will be presented.</p>\
+        <p>There will be a pair of tone \
+          </p>`,
+      data: {id: ID},
+    };
+
+
+// Variables de durée 
     var bip_duration = 1000 // in milliseconds
+    var max_target = 2000
+    var feedback_duration= 1000
+    var very_good = 500
+    var middle = 1000
+    var too_long = 2000
 
+    experiment_duration= 5 // experiment duration
+
+    
+// appeler ça des CONST et ecrire leur nom en majuscule
+// Initialisationb des bips 
     function playCueSound(){
       var frequency = 440.0
       var context = new AudioContext()
@@ -63,8 +86,27 @@
       on_start: function(){
         return playTargetSound()
       },
-      trial_duration: bip_duration,
-      choices: ["k"]
+      trial_duration: bip_duration + too_long ,
+      choices: ["k"],
+
+      //data : {feed}
+    }
+
+    var feedback = {
+      type: jsPsychHtmlKeyboardResponse, 
+      
+      stimulus: function(){
+        reaction_time = jsPsych.data.get().last(1).values()[0].rt
+        if  (reaction_time == null ){return 'too long'}
+        else if (reaction_time < very_good){return 'green'}
+        else if (reaction_time >= very_good  && reaction_time < middle){return 'orange'}
+        else if  (reaction_time >= middle  && reaction_time < too_long){return 'red'}
+        
+
+      },
+      trial_duration: feedback_duration ,
+      choices: "NO_KEYS"
+      
     }
 
 //----------ISI A faire : faire le ISI dans exponential distribution
@@ -76,7 +118,7 @@ var ISI={
   };
 
 //----------Creation of the Foreperiods: changer la smple distrbution uniform en ditribution gaussienne 
-
+ 
     function getRandomArbitrary(min, max) {
         return Math.random() * (max - min) + min;
     } // defintion of a fnction to have random trial (not normal for the moment just uniform)
@@ -99,8 +141,8 @@ var ISI={
       
       return randomNumber;
     }
+
     
-    experiment_duration= 20 // experiment duration
 
     fp_dur_list= []
     for (let i=0; i<= experiment_duration; i++){
@@ -145,40 +187,13 @@ var ISI={
         timeline.push(cue);
         timeline.push(fp_list[i]);
         timeline.push(target);
+        timeline.push(feedback);
         timeline.push(ISI);
                     }
 
 
     
-    jsPsych.run(timeline);
-
-
-
-
-
-
-
-
-
-
-
-
-
-    var tooEarly = {
-      type: jsPsychHtmlKeyboardResponse, 
-      stimulus: "Too early",
-      trial_duration: 1,
-      choices: ["k"],
-  }
-
-  var condEarly = {
-    timeline: [tooEarly],
-    conditional_function: function(){
-      if (responseEarly = true ){
-        return true 
-      }
-    },
-  }
+    jsPsych.run([INSTRUCTIONS].concat(timeline));
 
     </script>
 </body>
