@@ -81,13 +81,33 @@ var ISI={
         return Math.random() * (max - min) + min;
     } // defintion of a fnction to have random trial (not normal for the moment just uniform)
 
-    experiment_duration= 5 // experiment duration
+
+    function getRandomNormal(mean, standardDeviation) {
+      // creation of a normal distrbution from the polar box muller transform
+      let u = 0; 
+      let v = 0;
+      let s = 0;
+      
+      do {
+        u = Math.random() * 2 - 1;
+        v = Math.random() * 2 - 1;
+        s = u * u + v * v;
+      } while (s >= 1 || s === 0);
+      
+      const multiplier = Math.sqrt(-2 * Math.log(s) / s);
+      const randomNumber = mean + standardDeviation * u * multiplier;
+      
+      return randomNumber;
+    }
+    
+    experiment_duration= 20 // experiment duration
 
     fp_dur_list= []
     for (let i=0; i<= experiment_duration; i++){
-      fp_dur= getRandomArbitrary(1000, 6000)
+      fp_dur=  getRandomNormal(2.5,0.7)//getRandomArbitrary(1000, 6000)
       fp_dur_list.push(fp_dur)
     }
+
 
     fp_list= []
     for (let i=0; i<= experiment_duration; i++){
