@@ -221,13 +221,13 @@ var ISI={
 
       ISI_list= []
       for (let i=0; i<= experiment_duration; i++){
-        fp = {
+        ISI = {
         type: jsPsychHtmlKeyboardResponse, 
         stimulus: '<p style="font-size:60px; color: black"><b>+</b></p>',
-        trial_duration: fp_dur_list[i],
+        trial_duration: ISI_dur_list[i],
         choices: ["NO_KEYS"],
         }
-        fp_list.push(fp)
+        ISI_list.push(ISI)
       }
 
     var tooEarly = {
@@ -267,7 +267,7 @@ var ISI={
           timeline.push(fp_list[i]);
           timeline.push(target);
           timeline.push(feedback);
-          timeline.push(ISI);
+          timeline.push(ISI_list[i]);
                       }
       
       if (block!=2) {
