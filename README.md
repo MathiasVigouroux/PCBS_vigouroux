@@ -6,6 +6,14 @@ For the moment only one tone is played on the online version. In the local versi
 
 These experiments are smaller version of the real experiment.
 
+The code can be found in the Script_java file and is named main.html. 
+
+Cloning the respository on you desktop allow you to directly run this experiment locally.
+
+The master thesis is the paper from which the experiment is coming from.
+
+The script comport folder contains the initial matlab code, which was using pscyhtoolbox.
+
 # Context 
 
 
