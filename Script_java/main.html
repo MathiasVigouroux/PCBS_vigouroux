@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <head>
   <title>A simple jsPsych experiment</title>
+
+<link href="../jspsych-7.3.0/dist/jspsych.css" rel="stylesheet" type="text/css"/>
+
 </head>
 <body>
   <script src = "../jspsych-7.3.0/dist/jspsych.js"></script>
   <script src = "../jspsych-7.3.0/dist/plugin-html-keyboard-response.js"></script>
   <script src = "../jspsych-7.3.0/dist/plugin-html-keyboard-response.js"></script>
+
 
   <script>
 
@@ -17,32 +21,58 @@
       on_finish: function(){jsPsych.data.get().localSave('csv', `data-${ID}.csv`)}
     });
 
-    const ID = jsPsych.randomization.randomID(10)
+    // Variables de durée 
+    const bip_duration = 1000 // in milliseconds
+    const max_target = 2000
+    const feedback_duration= 1000
+    const very_good = 500
+    const middle = 1000
+    const too_long = 2000
+
+    var break_duration= 2000
+
+    var mean_fp = 2.5
+
+    var block_shuffle = jsPsych.randomization.shuffle([0,1,2]) // shuffling the block order
+
+    const order_frequency_list = [400,600,800] // correspondance between the cue tone and the 
+    const order_std_list = [0.2, 0.8, 1]
+
+    var shuffled_freq_list = [] 
+    var shuffled_std_list = []
+    
+
+
+    for ( let shuffle_id=0; shuffle_id <= block_shuffle.length; shuffle_id ++){
+      shuffled_std_list.push(order_std_list[block_shuffle[shuffle_id]])
+      shuffled_freq_list.push(order_frequency_list[block_shuffle[shuffle_id]])
+    }
+
+    var experiment_duration= 2 // duration of the block
+    const response_key = 'k'
+
+     const ID = jsPsych.randomization.randomID(10)
     const INSTRUCTIONS = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: `\
         <p>A series of tones will be presented.</p>\
-        <p>There will be a pair of tone \
-          </p>`,
+        <p>There will be a pair of two tones that are repeated.</p>
+        <p> After the target, you have to press as quick as possible <strong>[${response_key}] </strong> on the keyboard</p> \
+        <p> Press Space to pass this instruction <\p>   \
+        <p> ${order_frequency_list} and ${shuffled_freq_list}<\p> \
+        <p> ${order_std_list} and ${shuffled_std_list}<\p>
+          `,
       data: {id: ID},
     };
 
 
-// Variables de durée 
-    var bip_duration = 1000 // in milliseconds
-    var max_target = 2000
-    var feedback_duration= 1000
-    var very_good = 500
-    var middle = 1000
-    var too_long = 2000
 
-    experiment_duration= 5 // experiment duration
 
     
 // appeler ça des CONST et ecrire leur nom en majuscule
 // Initialisationb des bips 
-    function playCueSound(){
-      var frequency = 440.0
+    function playCueSound(frequency){
+      var frequency = frequency
       var context = new AudioContext()
       var o = context.createOscillator()
       o.frequency.value = frequency
@@ -70,19 +100,11 @@
     };
 
 //-----------Cue and Target Sound
-    var cue = {
-      type: jsPsychHtmlKeyboardResponse, 
-      stimulus: "cue",
-      on_start: function(){
-        return playCueSound()
-      },
-      trial_duration: bip_duration,
-      choices: "NO_KEYS"
-    }
+    
 
     var target = {
       type: jsPsychHtmlKeyboardResponse, 
-      stimulus: "target",
+      stimulus: '<p style="font-size:60px; color: black"><b>+</b></p>',
       on_start: function(){
         return playTargetSound()
       },
@@ -97,24 +119,37 @@
       
       stimulus: function(){
         reaction_time = jsPsych.data.get().last(1).values()[0].rt
-        if  (reaction_time == null ){return 'too long'}
-        else if (reaction_time < very_good){return 'green'}
-        else if (reaction_time >= very_good  && reaction_time < middle){return 'orange'}
-        else if  (reaction_time >= middle  && reaction_time < too_long){return 'red'}
+        if  (reaction_time == null ){return 'Too long, passing to the next tone'}
+        else if (reaction_time < very_good){return '<p style="font-size:60px; color: green"><b>+</b></p>'}
+        else if (reaction_time >= very_good  && reaction_time < middle){return `<p style="font-size:60px; color: orange"><b>+</b></p>`}
+        else if  (reaction_time >= middle  && reaction_time < too_long){return `<p style="font-size:60px; color: red"><b>+</b></p>`}
         
 
       },
       trial_duration: feedback_duration ,
-      choices: "NO_KEYS"
+      choices: ["NO_KEYS"],
       
     }
 
 //----------ISI A faire : faire le ISI dans exponential distribution
 var ISI={
       type: jsPsychHtmlKeyboardResponse, 
-      stimulus: "ISI",
+      stimulus: `<p style="font-size:60px; color: black"><b>+</b></p>`,
       trial_duration: 2000,
-      choices: "NO_KEYS"
+      choices: ["NO_KEYS"],
+  };
+
+  var BREAK={
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: `It is now time for a short break`,
+      trial_duration: break_duration,
+      choices: ["NO_KEYS"],
+  };
+
+  var end_BREAK={
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: `The break is over`,
+      
   };
 
 //----------Creation of the Foreperiods: changer la smple distrbution uniform en ditribution gaussienne 
@@ -144,53 +179,81 @@ var ISI={
 
     
 
-    fp_dur_list= []
-    for (let i=0; i<= experiment_duration; i++){
-      fp_dur=  getRandomNormal(2.5,0.7)//getRandomArbitrary(1000, 6000)
-      fp_dur_list.push(fp_dur)
-    }
 
-
-    fp_list= []
-    for (let i=0; i<= experiment_duration; i++){
-      fp = {
-      type: jsPsychHtmlKeyboardResponse, 
-      stimulus: "fp",
-      trial_duration: fp_dur_list[i],
-      choices: "NO_KEYS",
-      }
-      fp_list.push(fp)
-    }
-
-  var tooEarly = {
-      type: jsPsychHtmlKeyboardResponse, 
-      stimulus: "Too early",
-      trial_duration: 1,
-      choices: ["k"],
-  }
-
-  var condEarly = {
-    timeline: [tooEarly],
-    conditional_function: function(){
-      if (responseEarly = true ){
-        return true 
-      }
-    },
-  }
-
-   
-    //stim = jsPsych.randomization.shuffleNoRepeats(stim);
 
     let timeline = [];
-    
-    for (let i = 0; i < fp_list.length; i++) {           
-        timeline.push(cue);
-        timeline.push(fp_list[i]);
-        timeline.push(target);
-        timeline.push(feedback);
-        timeline.push(ISI);
-                    }
 
+    for (let block=0; block <=2; block++){
+
+      fp_dur_list= [];
+      for (let i=0; i<= experiment_duration; i++){
+        fp_dur=  getRandomNormal(mean_fp,shuffled_std_list[block])//getRandomArbitrary(1000, 6000)
+        fp_dur_list.push(fp_dur)
+      }
+
+
+      
+
+      fp_list= []
+      for (let i=0; i<= experiment_duration; i++){
+        fp = {
+        type: jsPsychHtmlKeyboardResponse, 
+        stimulus: '<p style="font-size:60px; color: black"><b>+</b></p>',
+        trial_duration: fp_dur_list[i],
+        choices: ["NO_KEYS"],
+        }
+        fp_list.push(fp)
+      }
+
+    var tooEarly = {
+        type: jsPsychHtmlKeyboardResponse, 
+        stimulus: "Too early",
+        trial_duration: 1,
+        choices: ["k"],
+    }
+
+    var condEarly = {
+      timeline: [tooEarly],
+      conditional_function: function(){
+        if (responseEarly = true ){
+          return true 
+        }
+      },
+    }
+
+
+    var cue = {
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: `<p style="font-size:60px; color: black"><b>+</b></p>`,
+      on_start: function(){
+        return playCueSound(shuffled_freq_list[block])
+      },
+      trial_duration: bip_duration,
+      choices: ["NO_KEYS"],
+    }
+
+    
+      //stim = jsPsych.randomization.shuffleNoRepeats(stim);
+
+     
+      
+      for (let i = 0; i < fp_list.length; i++) {           
+          timeline.push(cue);
+          timeline.push(fp_list[i]);
+          timeline.push(target);
+          timeline.push(feedback);
+          timeline.push(ISI);
+                      }
+      
+      if (block!=2) {
+         timeline.push(BREAK);
+          timeline.push(end_BREAK);
+      }
+     
+
+
+    }
+    
 
     
     jsPsych.run([INSTRUCTIONS].concat(timeline));
