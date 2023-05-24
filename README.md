@@ -1,5 +1,10 @@
 # PCBS_vigouroux
-This is a GitHub to create the project for PCBS
+This is a GitHub to create the project for PCBS.
+The pages can be found on : https://mathiasvigouroux.github.io/PCBS_vigouroux/
+Ans it is possible to launch the experiment online from : https://mathiasvigouroux.github.io/PCBS_vigouroux/Script_java/main.html
+For the moment only one tone is played on the online version. In the local version it is woking well.
+
+These experiments are smaller version of the real experiment.
 
 # Context 
 
