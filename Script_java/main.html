@@ -33,6 +33,10 @@
 
     var mean_fp = 2.5
 
+    var min_ISI = 1600
+
+    var max_ISI = 2500
+
     var block_shuffle = jsPsych.randomization.shuffle([0,1,2]) // shuffling the block order
 
     const order_frequency_list = [400,600,800] // correspondance between the cue tone and the 
@@ -195,6 +199,27 @@ var ISI={
       
 
       fp_list= []
+      for (let i=0; i<= experiment_duration; i++){
+        fp = {
+        type: jsPsychHtmlKeyboardResponse, 
+        stimulus: '<p style="font-size:60px; color: black"><b>+</b></p>',
+        trial_duration: fp_dur_list[i],
+        choices: ["NO_KEYS"],
+        }
+        fp_list.push(fp)
+      }
+
+
+      ISI_dur_list= [];
+      for (let i=0; i<= experiment_duration; i++){
+        ISI_dur=   getRandomArbitrary(min_ISI, max_ISI)
+        ISI_dur_list.push(ISI_dur)
+      }
+
+
+      
+
+      ISI_list= []
       for (let i=0; i<= experiment_duration; i++){
         fp = {
         type: jsPsychHtmlKeyboardResponse, 
